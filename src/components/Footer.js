@@ -19,7 +19,7 @@ const Footer = () => {
               <a href="#" className="text-decoration-none me-3" aria-label="Twitter">
                 <i className="bi bi-twitter fs-5"></i>
               </a>
-              <a href="https://github.com/nuwani-sithara/countries-app" className="text-decoration-none me-3" aria-label="GitHub">
+              <a href="https://github.com/nuwani-sithara/world-explorer" className="text-decoration-none me-3" aria-label="GitHub">
                 <i className="bi bi-github fs-5"></i>
               </a>
               <a href="https://www.linkedin.com/in/nuwani-sithara" className="text-decoration-none" aria-label="LinkedIn">
