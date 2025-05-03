@@ -1,12 +1,12 @@
 import { db } from '../firebase/config';
 import { doc, setDoc, deleteDoc, collection, getDocs } from 'firebase/firestore';
+import { getCountryByCode } from './api'; // Import your API function
 
-export const addFavorite = async (userId, country) => {
+export const addFavorite = async (userId, countryCode) => {
   try {
-    await setDoc(doc(db, 'users', userId, 'favorites', country.cca3), {
-      name: country.name.common,
-      flag: country.flags.png,
-      code: country.cca3,
+    // We only store the country code in Firebase
+    await setDoc(doc(db, 'users', userId, 'favorites', countryCode), {
+      code: countryCode,
       addedAt: new Date()
     });
     return true;
@@ -29,7 +29,7 @@ export const removeFavorite = async (userId, countryCode) => {
 export const getFavorites = async (userId) => {
   try {
     const querySnapshot = await getDocs(collection(db, 'users', userId, 'favorites'));
-    return querySnapshot.docs.map(doc => doc.data());
+    return querySnapshot.docs.map(doc => doc.data().code); // Return array of country codes
   } catch (error) {
     console.error("Error getting favorites:", error);
     return [];

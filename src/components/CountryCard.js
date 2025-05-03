@@ -1,6 +1,5 @@
 import { useAuth } from '../context/AuthContext';
-import { addFavorite, removeFavorite, getFavorites } from '../services/favorites';
-import { useState, useEffect } from 'react';
+import { addFavorite, removeFavorite, getFavorites } from '../services/favorites';import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -12,17 +11,17 @@ const CountryCard = ({ country, onFavoriteUpdate }) => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
-    if (currentUser) {
-      const checkFavoriteStatus = async () => {
+    const checkFavoriteStatus = async () => {
+      if (currentUser) {
         try {
           const favorites = await getFavorites(currentUser.uid);
-          setIsFavorite(favorites.some(fav => fav.code === country.cca3));
+          setIsFavorite(favorites.includes(country.cca3));
         } catch (error) {
           console.error("Error checking favorite status:", error);
         }
-      };
-      checkFavoriteStatus();
-    }
+      }
+    };
+    checkFavoriteStatus();
   }, [currentUser, country.cca3]);
 
   const handleFavoriteToggle = async (e) => {
@@ -30,7 +29,7 @@ const CountryCard = ({ country, onFavoriteUpdate }) => {
     e.stopPropagation();
     
     if (!currentUser) {
-      toast.info('Please login to add favorites');
+      toast.info('Please login to manage favorites');
       return;
     }
     
@@ -41,11 +40,10 @@ const CountryCard = ({ country, onFavoriteUpdate }) => {
         setIsFavorite(false);
         toast.success('Removed from favorites');
       } else {
-        await addFavorite(currentUser.uid, country);
+        await addFavorite(currentUser.uid, country.cca3);
         setIsFavorite(true);
         toast.success('Added to favorites');
       }
-      // Notify parent component about the update if needed
       if (onFavoriteUpdate) onFavoriteUpdate();
     } catch (error) {
       console.error("Error updating favorite:", error);
@@ -63,33 +61,25 @@ const CountryCard = ({ country, onFavoriteUpdate }) => {
       transition={{ duration: 0.3 }}
       whileHover={{ y: -5 }}
     >
-      {/* Favorite Button - Only for logged in users */}
       {currentUser && (
         <button 
           className={`position-absolute top-0 end-0 m-2 btn btn-sm ${isProcessing ? 'disabled' : ''}`}
           onClick={handleFavoriteToggle}
           style={{ 
             zIndex: 2,
-            backgroundColor: 'rgba(255, 255, 255, 0.23)',
+            backgroundColor: 'rgba(255, 255, 255, 0.8)',
             borderRadius: '50%',
             width: '32px',
             height: '32px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            border: 'none',
-            outline: 'none'
+            border: 'none'
           }}
           disabled={isProcessing}
           aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
         >
-          <i 
-            className={`bi ${isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart'}`}
-            style={{
-              fontSize: '1.2rem',
-              transition: 'color 0.2s ease-in-out'
-            }}
-          ></i>
+          <i className={`bi ${isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart'}`}></i>
         </button>
       )}
 

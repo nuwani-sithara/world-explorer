@@ -1,23 +1,45 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getFavorites } from '../services/favorites';
+import { getCountryByCode } from '../services/api';
 import CountryCard from '../components/CountryCard';
 import { motion } from 'framer-motion';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Favorites = () => {
   const { currentUser } = useAuth();
-  const [favorites, setFavorites] = useState([]);
+  const [favoriteCountries, setFavoriteCountries] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (currentUser) {
-      const loadFavorites = async () => {
-        const favs = await getFavorites(currentUser.uid);
-        setFavorites(favs);
-        setLoading(false);
-      };
-      loadFavorites();
+  const fetchFavoriteCountries = async () => {
+    if (!currentUser) {
+      setLoading(false);
+      return;
     }
+
+    try {
+      // 1. Get favorite country codes from Firebase
+      const favoriteCodes = await getFavorites(currentUser.uid);
+      
+      // 2. Fetch complete country data for each code
+      const countriesPromises = favoriteCodes.map(code => 
+        getCountryByCode(code).then(res => res.data[0])
+      );
+      
+      // 3. Wait for all requests to complete
+      const countries = await Promise.all(countriesPromises);
+      setFavoriteCountries(countries);
+    } catch (error) {
+      console.error("Error fetching favorites:", error);
+      toast.error('Failed to load favorites');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFavoriteCountries();
   }, [currentUser]);
 
   if (!currentUser) {
@@ -40,8 +62,9 @@ const Favorites = () => {
 
   return (
     <div className="container py-5">
-      <h2 className="mb-4">Your Favorite Countries</h2>
-      {favorites.length === 0 ? (
+      <h2 className="mb-4 fw-bold">Your Favorite Countries</h2>
+      
+      {favoriteCountries.length === 0 ? (
         <motion.div 
           className="text-center py-5"
           initial={{ opacity: 0 }}
@@ -52,22 +75,14 @@ const Favorites = () => {
         </motion.div>
       ) : (
         <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-          {favorites.map((fav) => (
-            <div key={fav.code} className="col">
-              <CountryCard 
-                country={{
-                  flags: { png: fav.flag },
-                  name: { common: fav.name },
-                  cca3: fav.code,
-                  // Add other required properties with dummy data if needed
-                  population: 0,
-                  region: 'Unknown',
-                  capital: ['Unknown']
-                }} 
-              />
+          {favoriteCountries.map((country) => (
+            <div key={country.cca3} className="col">
+              <CountryCard country={country} />
             </div>
+            
           ))}
         </div>
+        
       )}
     </div>
   );
