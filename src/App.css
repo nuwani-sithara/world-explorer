@@ -1,0 +1,118 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Custom variables */
+:root {
+  --bs-body-font-family: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Custom styles */
+.app-header {
+  background-color: var(--bs-body-bg);
+  padding: 1.5rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+}
+
+.app-main {
+  min-height: calc(100vh - 80px);
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  transition: all 0.3s ease;
+}
+
+.country-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 0.5rem !important;
+}
+
+.country-card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.country-card .card-title {
+  color: var(--bs-heading-color);
+  transition: color 0.3s ease;
+}
+
+.country-details .flag-container img {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+  .country-details .col-lg-6 {
+    margin-bottom: 2rem;
+  }
+}
+
+/* Animation classes */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Dark mode specific styles */
+[data-bs-theme="dark"] .country-card {
+  background-color: var(--bs-dark-bg-subtle);
+  border-color: var(--bs-border-color);
+}
+
+[data-bs-theme="dark"] .country-card .card-title {
+  color: var(--bs-light);
+}
+
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select {
+  background-color: var(--bs-dark-bg-subtle);
+  border-color: var(--bs-border-color);
+  color: var(--bs-light);
+}
+
+[data-bs-theme="dark"] .form-control:focus,
+[data-bs-theme="dark"] .form-select:focus {
+  background-color: var(--bs-dark-bg-subtle);
+  color: var(--bs-light);
+}
+

@@ -1,0 +1,34 @@
+.footer {
+    transition: all 0.3s ease;
+  }
+  
+  .footer a {
+    transition: color 0.2s ease;
+  }
+  
+  .footer a:hover {
+    color: var(--bs-primary) !important;
+  }
+  
+  .social-icons a {
+    display: inline-block;
+    transition: transform 0.2s ease;
+  }
+  
+  .social-icons a:hover {
+    transform: translateY(-3px);
+  }
+  
+  /* Dark mode specific styles */
+  [data-bs-theme="dark"] .footer {
+    background-color: var(--bs-dark) !important;
+    color: var(--bs-light) !important;
+  }
+  
+  [data-bs-theme="dark"] .footer a {
+    color: var(--bs-light);
+  }
+  
+  [data-bs-theme="dark"] .footer .text-muted {
+    color: var(--bs-gray-400) !important;
+  }
