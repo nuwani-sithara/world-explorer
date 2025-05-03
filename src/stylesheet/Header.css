@@ -1,0 +1,27 @@
+/* Mobile menu styles */
+@media (max-width: 991.98px) {
+    .mobile-menu {
+      padding: 1rem;
+      background-color: var(--bs-body-bg);
+      border-top: 1px solid var(--bs-border-color);
+      margin-top: 0.5rem;
+    }
+    
+    .mobile-menu .btn {
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
+    
+    .navbar-toggler {
+      border: none;
+      font-size: 1.5rem;
+      padding: 0.25rem 0.5rem;
+    }
+  }
+  
+  /* Hide logo image on very small screens */
+  @media (max-width: 400px) {
+    .navbar-brand img {
+      display: none !important;
+    }
+  }

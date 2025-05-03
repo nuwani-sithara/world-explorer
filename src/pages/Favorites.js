@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { getFavorites } from '../services/favorites';
+import { getFirestore, collection, query, where, onSnapshot } from 'firebase/firestore';
 import { getCountryByCode } from '../services/api';
 import CountryCard from '../components/CountryCard';
 import { motion } from 'framer-motion';
@@ -11,36 +11,46 @@ const Favorites = () => {
   const { currentUser } = useAuth();
   const [favoriteCountries, setFavoriteCountries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const db = getFirestore();
 
-  const fetchFavoriteCountries = async () => {
+  useEffect(() => {
     if (!currentUser) {
       setLoading(false);
       return;
     }
 
-    try {
-      // 1. Get favorite country codes from Firebase
-      const favoriteCodes = await getFavorites(currentUser.uid);
-      
-      // 2. Fetch complete country data for each code
-      const countriesPromises = favoriteCodes.map(code => 
-        getCountryByCode(code).then(res => res.data[0])
-      );
-      
-      // 3. Wait for all requests to complete
-      const countries = await Promise.all(countriesPromises);
-      setFavoriteCountries(countries);
-    } catch (error) {
-      console.error("Error fetching favorites:", error);
-      toast.error('Failed to load favorites');
-    } finally {
-      setLoading(false);
-    }
-  };
+    const fetchFavorites = async () => {
+      try {
+        // 1. Create reference to the user's favorites subcollection
+        const favoritesRef = collection(db, 'users', currentUser.uid, 'favorites');
+        
+        // 2. Set up real-time listener
+        const unsubscribe = onSnapshot(favoritesRef, async (snapshot) => {
+          const favoriteCodes = snapshot.docs.map(doc => doc.data().code);
+          
+          // 3. Fetch complete country data for each favorite
+          const countriesPromises = favoriteCodes.map(code => 
+            getCountryByCode(code)
+              .then(res => res.data[0])
+              .catch(() => null) // Skip failed fetches
+          );
 
-  useEffect(() => {
-    fetchFavoriteCountries();
-  }, [currentUser]);
+          const countries = (await Promise.all(countriesPromises)).filter(Boolean);
+          setFavoriteCountries(countries);
+          setLoading(false);
+        });
+
+        return () => unsubscribe(); // Cleanup on unmount
+
+      } catch (error) {
+        console.error("Error fetching favorites:", error);
+        toast.error('Failed to load favorites');
+        setLoading(false);
+      }
+    };
+
+    fetchFavorites();
+  }, [currentUser, db]);
 
   if (!currentUser) {
     return (
@@ -77,12 +87,13 @@ const Favorites = () => {
         <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
           {favoriteCountries.map((country) => (
             <div key={country.cca3} className="col">
-              <CountryCard country={country} />
+              <CountryCard 
+                country={country}
+                onFavoriteUpdate={() => setFavoriteCountries(prev => [...prev])} // Force re-render
+              />
             </div>
-            
           ))}
         </div>
-        
       )}
     </div>
   );

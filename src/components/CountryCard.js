@@ -10,18 +10,28 @@ const CountryCard = ({ country, onFavoriteUpdate }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // More efficient favorite checking
   useEffect(() => {
+    let isMounted = true;
+    
     const checkFavoriteStatus = async () => {
       if (currentUser) {
         try {
           const favorites = await getFavorites(currentUser.uid);
-          setIsFavorite(favorites.includes(country.cca3));
+          if (isMounted) {
+            setIsFavorite(favorites.includes(country.cca3));
+          }
         } catch (error) {
           console.error("Error checking favorite status:", error);
         }
       }
     };
+    
     checkFavoriteStatus();
+    
+    return () => {
+      isMounted = false;
+    };
   }, [currentUser, country.cca3]);
 
   const handleFavoriteToggle = async (e) => {
@@ -33,19 +43,23 @@ const CountryCard = ({ country, onFavoriteUpdate }) => {
       return;
     }
     
+    // Immediate UI update
+    const newFavoriteStatus = !isFavorite;
+    setIsFavorite(newFavoriteStatus);
+    
     setIsProcessing(true);
     try {
-      if (isFavorite) {
+      if (!newFavoriteStatus) {
         await removeFavorite(currentUser.uid, country.cca3);
-        setIsFavorite(false);
         toast.success('Removed from favorites');
       } else {
         await addFavorite(currentUser.uid, country.cca3);
-        setIsFavorite(true);
         toast.success('Added to favorites');
       }
       if (onFavoriteUpdate) onFavoriteUpdate();
     } catch (error) {
+      // Revert if error occurs
+      setIsFavorite(!newFavoriteStatus);
       console.error("Error updating favorite:", error);
       toast.error('Failed to update favorites');
     } finally {
