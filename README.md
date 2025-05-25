@@ -1,4 +1,19 @@
 # Countries App
+I’ve developed a dynamic frontend application using React that integrates seamlessly with the REST Countries API. This project highlights my skills in modern web development, API integration, and responsive design, delivering an interactive and user-friendly experience.  
+
+🔹 Key Features:
+✅ Comprehensive Country Data: Fetches and displays details like name, population, region, languages, capital, and flags using multiple API endpoints.  
+✅ Search & Filter Functionality: Users can search countries by name and filter by region or language, with real-time updates.  
+✅ Responsive Design: Built with Tailwind CSS (or your chosen framework) for a sleek, mobile-friendly interface.  
+✅ Optional User Authentication: Added login functionality to enable personalized features like saving favorite countries (if implemented).  
+✅ Thorough Testing: Implemented unit and integration tests using **Jest and React Testing Library** to ensure reliability.  
+
+🔹 Technical Highlights:
+✔ React Functional Components & Hooks: Leveraged modern React practices for clean, maintainable code.  
+✔ REST Countries API Integration: Utilized 4+ endpoints to fetch and display data dynamically.  
+✔ Git Best Practices: Maintained a well-documented commit history for version control.  
+✔ Deployment: Hosted on Vercel for live access.  
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
